@@ -1,0 +1,24 @@
+name: super_app
+description: App de pedidos para supermercados (marca blanca, lista para personalizar).
+publish_to: 'none'
+version: 1.1.1+3
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.2
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  # Para usar el logo de cada cliente, descomenta y coloca la imagen:
+  # assets:
+  #   - assets/logo.png

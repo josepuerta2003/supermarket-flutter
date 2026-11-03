@@ -1,0 +1,52 @@
+# Compila SuperMarket.apk en la nube (GitHub Actions), sin instalar Flutter.
+# Se ejecuta en cada push a main o manualmente desde la pestana "Actions".
+name: Compilar APK SuperMarket
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: SuperMarket
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generar carpeta android (si falta)
+        run: |
+          if [ ! -f android/app/src/main/AndroidManifest.xml ]; then
+            flutter create --org com.supermarket --project-name super_app --platforms android .
+          fi
+
+      - name: Poner nombre de la app
+        run: |
+          sed -i -E "s/android:label=\"[^\"]*\"/android:label=\"$APP_NAME\"/" android/app/src/main/AndroidManifest.xml
+
+      - name: Dependencias y pruebas
+        run: |
+          flutter pub get
+          flutter test
+
+      - name: Compilar APK
+        run: |
+          flutter build apk --release
+          mkdir -p APK
+          cp build/app/outputs/flutter-apk/app-release.apk "APK/$APP_NAME.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SuperMarket-apk
+          path: APK/SuperMarket.apk
